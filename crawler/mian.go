@@ -7,13 +7,13 @@ import (
 	"golang.org/x/text/encoding"
 	. "golang.org/x/text/transform"
 	"haoprogrammer/myspider/crawler/engine"
+	"haoprogrammer/myspider/crawler/scheduler"
 	"haoprogrammer/myspider/crawler/zhenai/parser"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"regexp"
 )
-
 
 func getMsg() {
 	resp, err := http.Get("https://www.zhenai.com/zhenghun")
@@ -24,7 +24,7 @@ func getMsg() {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Error: status code" ,resp.StatusCode)
+		fmt.Println("Error: status code", resp.StatusCode)
 		return
 	}
 
@@ -43,7 +43,7 @@ func getMsg() {
 }
 
 //判断字符编码
-func determineEncoding(r io.Reader) encoding.Encoding{
+func determineEncoding(r io.Reader) encoding.Encoding {
 	bytes, err := bufio.NewReader(r).Peek(1024)
 	if err != nil {
 		panic(err)
@@ -54,31 +54,34 @@ func determineEncoding(r io.Reader) encoding.Encoding{
 }
 
 //打印城市列表
-func printCityList(contents []byte){
+func printCityList(contents []byte) {
 	re := regexp.MustCompile(`<a href="(http://www.zhenai.com/zhenghun/[0-9a-z]+)"[^>]*>([^<]+)</a>`)
-	matchs := re.FindAllSubmatch(contents, -1)
-	for _, m := range matchs  {
+	matches := re.FindAllSubmatch(contents, -1)
+	for _, m := range matches {
 		//for _,subMatch := range m {
 		//	//fmt.Printf("%s ", subMatch)
 		//
 		//}
-		fmt.Printf("City: %s, URL: %s\n",m[2],m[1])
+		fmt.Printf("City: %s, URL: %s\n", m[2], m[1])
 
 		//fmt.Printf("%s\n", m)
 		fmt.Println()
 	}
 
-
-	fmt.Println("Matches found%d\n", len(matchs))
+	fmt.Println("Matches found %d\n", len(matches))
 }
-
-
 
 func main() {
 	//getMsg()
-	engine.Run(engine.Request{
-		Url:"https://www.zhenai.com/zhenghun",
-		ParserFunc:parser.ParserCityList,
+	e := engine.ConcurrentEngine{
+		Scheduler:   &scheduler.SimpleScheduler{},
+		WorkerCount: 10,
+	}
+	e.Run(engine.Request{
+		Url:        "https://www.zhenai.com/zhenghun",
+		ParserFunc: parser.ParseCityList,
 	})
+
+	//resp, err := http.Get("http://album.zhenai.com/u/1194708821")
 
 }

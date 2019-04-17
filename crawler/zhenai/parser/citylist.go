@@ -7,24 +7,27 @@ import (
 
 const cityListRe = `<a href="(http://www.zhenai.com/zhenghun/[0-9a-z]+)"[^>]*>([^<]+)</a>`
 
-func ParserCityList(contents []byte) engine.ParserResult{
+func ParseCityList(contents []byte) engine.ParserResult {
 
 	re := regexp.MustCompile(cityListRe)
-	matchs := re.FindAllSubmatch(contents, -1)
+	matches := re.FindAllSubmatch(contents, -1)
 
 	result := engine.ParserResult{}
+	limit := 10
 
-	for _, m := range matchs  {
+	for _, m := range matches {
 		//这里指明item类型为string
-		result.Items = append(result.Items, string(m[2]))
+		result.Items = append(result.Items, "City "+string(m[2]))
 
 		result.Requests = append(result.Requests, engine.Request{
 			Url: string(m[1]),
-			ParserFunc: engine.NilParser,
+			//ParserFunc: engine.NilParser,
+			ParserFunc: ParseCity,
 		})
-
+		limit--
+		if limit <= 0 {
+			break
+		}
 	}
-    return result
+	return result
 }
-
-
