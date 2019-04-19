@@ -2,9 +2,16 @@ package scheduler
 
 import "haoprogrammer/myspider/crawler/engine"
 
+//每个worker有自己的chan
 type QueuedScheduler struct {
 	requestChan chan engine.Request
-	workerChan  chan chan engine.Request
+	//workerChan chan worker(chan engine.Request)
+	workerChan chan chan engine.Request
+}
+
+func (s *QueuedScheduler) WorkerChan() chan engine.Request {
+	return make(chan engine.Request)
+
 }
 
 func (s *QueuedScheduler) Submit(r engine.Request) {
@@ -13,10 +20,6 @@ func (s *QueuedScheduler) Submit(r engine.Request) {
 
 func (s *QueuedScheduler) WorkerReady(w chan engine.Request) {
 	s.workerChan <- w
-}
-
-func (s *QueuedScheduler) ConfigureMasterWorkerChan(chan engine.Request) {
-	panic("implement me")
 }
 
 func (s *QueuedScheduler) Run() {

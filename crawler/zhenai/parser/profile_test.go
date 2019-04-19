@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"haoprogrammer/myspider/crawler/engine"
 	"haoprogrammer/myspider/crawler/model"
 	"io/ioutil"
 	"testing"
@@ -13,19 +14,25 @@ func TestParseProfile(t *testing.T) {
 		panic(err)
 	}
 
-	result := ParseProfile(contents, "静听雨声")
+	result := ParseProfile(contents, "http://album.zhenai.com/u/1518474013", "阳儿")
 
 	if len(result.Items) != 1 {
 		t.Errorf("Items should contain 1 element;but was %v", result.Items)
 	}
 
-	profile := result.Items[0].(model.Profile)
+	actual := result.Items[0]
 
-	expected := model.Profile{
-		Age: string(26),
+	expected := engine.Item{
+		Url:  "http://album.zhenai.com/u/1518474013",
+		Type: "zhenai",
+		Id:   "1518474013",
+		Payload: model.Profile{
+			//Age: "51",
+			Name: "阳儿",
+		},
 	}
 
-	if profile != expected {
-		t.Errorf("expected %v, but was %v", expected, profile)
+	if actual != expected {
+		t.Errorf("expected %v, but was %v", expected, actual)
 	}
 }

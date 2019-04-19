@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata: 
+  name: es-single-nodeport
+  namespace: elk
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 9200
+    targetPort: 9200
+    nodePort: 31200
+  - name: tcp
+    port: 9300
+    targetPort: 9300
+    nodePort: 31300
+  selector:
+    app: es-single
+
+
+

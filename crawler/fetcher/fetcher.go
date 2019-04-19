@@ -13,8 +13,11 @@ import (
 	"time"
 )
 
-var rateLimiter = time.Tick(100 * time.Millisecond)
+//待爬取目标网站如果爬取网络流量正常稳定可以适当减少等待时间
+// 500毫秒执行一次请求
+var rateLimiter = time.Tick(500 * time.Millisecond)
 
+// fetch到的网页数据 该url不能获取数据则err
 func Fetch(url string) ([]byte, error) {
 
 	<-rateLimiter
@@ -23,12 +26,15 @@ func Fetch(url string) ([]byte, error) {
 	//defer resp.Body.Close()
 
 	client := &http.Client{}
+
+	//client := getProxyClient()
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	req.Header.Set("User-Agent",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36")
+		"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -70,10 +76,40 @@ func Fetch(url string) ([]byte, error) {
 func determineEncoding(r *bufio.Reader) encoding.Encoding {
 	bytes, err := r.Peek(1024)
 	if err != nil {
+		// Peek失败 不代表该网页文本不可读 返回默认编码
 		log.Panicf("Fetcher error: %v", err)
 		return unicode.UTF8
 	}
 	encoding, _, _ := charset.DetermineEncoding(bytes, "")
 
 	return encoding
+}
+
+//func getProxyClient() *http.Client{
+//	proxyAddr := "http://125.46.0.62:53281/"
+//	//httpUrl := "http://134.175.165.18:8000/get_ip"
+//	proxy, err := url.Parse(proxyAddr)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	netTransport := &http.Transport{
+//		Proxy:http.ProxyURL(proxy),
+//		MaxIdleConnsPerHost: 10,
+//		ResponseHeaderTimeout: time.Second * time.Duration(5),
+//	}
+//	httpClient := &http.Client{
+//		Timeout: time.Second * 10,
+//		Transport: netTransport,
+//	}
+//
+//	return httpClient
+//}
+
+//从文件中获取useragent
+func getUserAgent() {
+	contents, err := ioutil.ReadFile("crawler/fetcher/useragent.txt")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s", contents)
 }

@@ -7,6 +7,7 @@ import (
 	"golang.org/x/text/encoding"
 	. "golang.org/x/text/transform"
 	"haoprogrammer/myspider/crawler/engine"
+	"haoprogrammer/myspider/crawler/persist"
 	"haoprogrammer/myspider/crawler/scheduler"
 	"haoprogrammer/myspider/crawler/zhenai/parser"
 	"io"
@@ -73,15 +74,26 @@ func printCityList(contents []byte) {
 
 func main() {
 	//getMsg()
+	//保证es启动，有存储数据的地方
+	itemChan, err := persist.ItemSaver("dating_profile")
+	if err != nil {
+		panic(err)
+	}
+
 	e := engine.ConcurrentEngine{
-		Scheduler:   &scheduler.SimpleScheduler{},
-		WorkerCount: 10,
+		Scheduler:   &scheduler.QueuedScheduler{},
+		WorkerCount: 100,
+		ItemChan:    itemChan,
 	}
 	e.Run(engine.Request{
 		Url:        "https://www.zhenai.com/zhenghun",
 		ParserFunc: parser.ParseCityList,
 	})
-
+	//e.Run(engine.Request{
+	//	Url:        "https://www.zhenai.com/zhenghun/shanghai",
+	//	ParserFunc: parser.ParseCity,
+	//})
+	//
 	//resp, err := http.Get("http://album.zhenai.com/u/1194708821")
-
+	//getUserAgent()
 }

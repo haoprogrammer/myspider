@@ -2,13 +2,21 @@ package scheduler
 
 import "haoprogrammer/myspider/crawler/engine"
 
+//所有的worker共用一个chan
 type SimpleScheduler struct {
 	workerChan chan engine.Request
 }
 
-func (s *SimpleScheduler) ConfigureMasterWorkerChan(c chan engine.Request) {
+func (s *SimpleScheduler) WorkerChan() chan engine.Request {
+	//所有的worker共用同一个worker
+	return s.workerChan
+}
 
-	s.workerChan = c
+func (s *SimpleScheduler) WorkerReady(chan engine.Request) {
+}
+
+func (s *SimpleScheduler) Run() {
+	s.workerChan = make(chan engine.Request)
 }
 
 func (s *SimpleScheduler) Submit(r engine.Request) {

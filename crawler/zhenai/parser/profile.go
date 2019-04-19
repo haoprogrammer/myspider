@@ -10,7 +10,9 @@ var ageRe = regexp.MustCompile(`<div class="m-btn purple" data-v-bff6f798>([^<]+
 var educationRe = regexp.MustCompile(`<div class="m-btn purple" data-v-bff6f798>([^<]+)科</div>`)
 var incomeRe = regexp.MustCompile(`<div class="m-btn purple" data-v-bff6f798="">([^<]+)千</div>`)
 
-func ParseProfile(contents []byte, name string) engine.ParserResult {
+var idUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
+
+func ParseProfile(contents []byte, url string, name string) engine.ParserResult {
 	profile := model.Profile{}
 
 	profile.Name = name
@@ -20,7 +22,14 @@ func ParseProfile(contents []byte, name string) engine.ParserResult {
 	profile.Income = extractString(contents, incomeRe)
 
 	result := engine.ParserResult{
-		Items: []interface{}{profile},
+		Items: []engine.Item{
+			{
+				Url:     url,
+				Type:    "zhenai",
+				Id:      extractString([]byte(url), idUrlRe),
+				Payload: profile,
+			},
+		},
 	}
 
 	return result
@@ -34,4 +43,13 @@ func extractString(contents []byte, re *regexp.Regexp) string {
 	} else {
 		return ""
 	}
+}
+
+//抽取出公共方法
+func ProfileParser(name string) engine.ParserFunc {
+	//解析文本
+	return func(c []byte, url string) engine.ParserResult {
+		return ParseProfile(c, url, name)
+	}
+
 }

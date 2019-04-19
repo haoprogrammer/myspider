@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"haoprogrammer/myspider/crawler/fetcher"
 	"log"
 )
 
@@ -33,18 +32,4 @@ func (e SimpleEngine) Run(seeds ...Request) {
 			log.Printf("Got Item %v", item)
 		}
 	}
-}
-
-func worker(r Request) (ParserResult, error) {
-	log.Printf("fetching %s", r.Url)
-	// Fetch每1个Request获得原始网页转换为UTF-8编码的原始文本数据
-	body, err := fetcher.Fetch(r.Url)
-	if err != nil {
-		log.Printf("Fetcher error"+"fetching url %s: %v", r.Url, err)
-		return ParserResult{}, err
-	}
-
-	//parserResult := r.ParserFunc(body)
-	// 解析原始网页文本数据
-	return r.ParserFunc(body), nil
 }
