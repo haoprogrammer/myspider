@@ -7,9 +7,10 @@ import (
 	"golang.org/x/text/encoding"
 	. "golang.org/x/text/transform"
 	"haoprogrammer/myspider/crawler/engine"
-	"haoprogrammer/myspider/crawler/persist"
 	"haoprogrammer/myspider/crawler/scheduler"
 	"haoprogrammer/myspider/crawler/zhenai/parser"
+	"haoprogrammer/myspider/crawler_distributed/config"
+	"haoprogrammer/myspider/crawler_distributed/persist/client"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -75,7 +76,9 @@ func printCityList(contents []byte) {
 func main() {
 	//getMsg()
 	//保证es启动，有存储数据的地方
-	itemChan, err := persist.ItemSaver("dating_profile")
+	//itemChan, err := persist.ItemSaver("dating_profile")
+	itemChan, err := client.ItemSaver(
+		fmt.Sprintf(":%d", config.ItemSarverPort))
 	if err != nil {
 		panic(err)
 	}
@@ -86,9 +89,8 @@ func main() {
 		ItemChan:    itemChan,
 	}
 	e.Run(engine.Request{
-		Url: "https://www.zhenai.com/zhenghun",
-		//ParserFunc: parser.ParseCityList,
-		Parser: engine.NewFuncParser(parser.ParseCityList, "ParseCityList"),
+		Url:        "https://www.zhenai.com/zhenghun",
+		ParserFunc: parser.ParseCityList,
 	})
 	//e.Run(engine.Request{
 	//	Url:        "https://www.zhenai.com/zhenghun/shanghai",

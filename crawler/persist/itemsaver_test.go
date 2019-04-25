@@ -27,7 +27,7 @@ func TestItemSaver(t *testing.T) {
 		elastic.SetURL("http://10.10.55.113:31200"))
 	//存储item
 	const index = "dating_test"
-	err = save(client, index, expected)
+	err = Save(client, index, expected)
 	if err != nil {
 		panic(err)
 	}

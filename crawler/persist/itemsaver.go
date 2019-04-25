@@ -24,7 +24,7 @@ func ItemSaver(index string) (chan engine.Item, error) {
 			itemCount++
 
 			//将数据存储到es中
-			err := save(client, index, item)
+			err := Save(client, index, item)
 			if err != nil {
 				log.Printf("item save error "+
 					"saveing item %v: %v", item, err)
@@ -35,7 +35,7 @@ func ItemSaver(index string) (chan engine.Item, error) {
 }
 
 //将item存到es中
-func save(client *elastic.Client, index string, item engine.Item) error {
+func Save(client *elastic.Client, index string, item engine.Item) error {
 	//判断type是否为空
 	if item.Type == "" {
 		return errors.New("must supply Type")

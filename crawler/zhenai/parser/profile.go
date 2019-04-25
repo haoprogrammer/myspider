@@ -12,7 +12,7 @@ var incomeRe = regexp.MustCompile(`<div class="m-btn purple" data-v-bff6f798="">
 
 var idUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
 
-func ParseProfile(contents []byte, url string, name string) engine.ParserResult {
+func parseProfile(contents []byte, url string, name string) engine.ParserResult {
 	profile := model.Profile{}
 
 	profile.Name = name
@@ -46,10 +46,28 @@ func extractString(contents []byte, re *regexp.Regexp) string {
 }
 
 //抽取出公共方法
-func ProfileParser(name string) engine.ParserFunc {
-	//解析文本
-	return func(c []byte, url string) engine.ParserResult {
-		return ParseProfile(c, url, name)
-	}
+//func ProfileParser(name string) engine.ParserFunc {
+//	//解析文本
+//	return func(c []byte, url string) engine.ParserResult {
+//		return ParseProfile(c, url, name)
+//	}
+//
+//}
 
+type ProfileParser struct {
+	userName string
+}
+
+func (p *ProfileParser) Parse(contents []byte, url string) engine.ParserResult {
+	return parseProfile(contents, url, p.userName)
+}
+
+func (p *ProfileParser) Serialize() (name string, args interface{}) {
+	return "ProfileParser", p.userName
+}
+
+func NewProfileParser(name string) *ProfileParser {
+	return &ProfileParser{
+		userName: name,
+	}
 }

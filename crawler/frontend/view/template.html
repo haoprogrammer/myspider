@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<input type="text" maxlength="100" />
+<button>搜索</button>
+<h2>共为你找到相关的{{.Hits}}个。显示从{{.Start}}起共{{len .Items}}</h2>
+    <tbody>
+    {{range .Items}}
+    <tr>
+        <td><a href="{{.Url}}">{{.Payload.Name}}</a></td>
+        {{/*{{with .Payload}}*/}}
+        <td>{{.Payload.Age}}</td>
+        <td>{{.Payload.Education}}</td>
+    </tr>
+    {{else}}
+        <div>没有相关用户</div>
+    {{end}}
+    </tbody>
+</table>
+
+</body>
+</html>

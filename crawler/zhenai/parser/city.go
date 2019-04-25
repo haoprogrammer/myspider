@@ -33,7 +33,8 @@ func ParseCity(contents []byte, _ string) engine.ParserResult {
 		result.Requests = append(result.Requests, engine.Request{
 			Url: string(m[1]),
 			//这里注意函数的作用域,函数执行,用原先的string(m[2])的值已经改变了
-			ParserFunc: ProfileParser(string(m[2])),
+			//ParserFunc: ProfileParser(string(m[2])),
+			Parser: NewProfileParser(string(m[2])),
 		})
 
 	}
@@ -42,8 +43,9 @@ func ParseCity(contents []byte, _ string) engine.ParserResult {
 	for _, m := range matches {
 		result.Requests = append(result.Requests,
 			engine.Request{
-				Url:        string(m[1]),
-				ParserFunc: ParseCity,
+				Url: string(m[1]),
+				//ParserFunc: ParseCity,
+				Parser: engine.NewFuncParser(ParseCity, "ParseCity"),
 			})
 	}
 

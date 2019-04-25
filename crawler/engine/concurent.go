@@ -80,7 +80,7 @@ func createWorker(in chan Request, out chan ParserResult, ready ReadyNotifier) {
 			ready.WorkerReady(in)
 			//从in拿数据
 			request := <-in
-			result, err := worker(request)
+			result, err := Worker(request)
 			if err != nil {
 				continue
 			}
