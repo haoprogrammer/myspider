@@ -12,7 +12,7 @@ var incomeRe = regexp.MustCompile(`<div class="m-btn purple" data-v-bff6f798="">
 
 var idUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
 
-func parseProfile(contents []byte, url string, name string) engine.ParserResult {
+func ParseProfile(contents []byte, url string, name string) engine.ParserResult {
 	profile := model.Profile{}
 
 	profile.Name = name
@@ -59,11 +59,12 @@ type ProfileParser struct {
 }
 
 func (p *ProfileParser) Parse(contents []byte, url string) engine.ParserResult {
-	return parseProfile(contents, url, p.userName)
+	return ParseProfile(contents, url, p.userName)
 }
 
 func (p *ProfileParser) Serialize() (name string, args interface{}) {
-	return "ProfileParser", p.userName
+	//return "ProfileParser", p.userName
+	return "ParseProfile", p.userName
 }
 
 func NewProfileParser(name string) *ProfileParser {

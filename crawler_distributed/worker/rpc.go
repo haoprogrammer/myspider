@@ -2,9 +2,9 @@ package worker
 
 import "haoprogrammer/myspider/crawler/engine"
 
-type CrawService struct{}
+type CrawlService struct{}
 
-func (CrawService) process(
+func (CrawlService) Process(
 	req Request, result *ParseResult) error {
 	engineReq, err := DeserializeRequest(req)
 	if err != nil {

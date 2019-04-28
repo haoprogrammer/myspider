@@ -89,6 +89,13 @@ func deserializeParser(p SerializedParser) (engine.Parser, error) {
 			parser.ParseCity, config.ParseCity), nil
 	case config.NilParser:
 		return engine.NilParser{}, nil
+	//case config.ParseProfile:
+	//	if userName, ok := p.Args.(string); ok {
+	//		return parser.NewProfileParser(
+	//			userName), nil
+	//	} else {
+	//		return nil, fmt.Errorf("invalid args:%v", p.Args)
+	//	}
 	case config.ParseProfile:
 		if userName, ok := p.Args.(string); ok {
 			return parser.NewProfileParser(

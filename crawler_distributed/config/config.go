@@ -13,5 +13,9 @@ const (
 	//Elasticsearch
 	ElasticIndex = "dating_profile"
 	//RPC Endpoints
-	ItemSaverRpc = "ItemSaverService.Save"
+	ItemSaverRpc    = "ItemSaverService.Save"
+	CrawlServiceRpc = "CrawlService.Process"
+
+	//Rate limiting
+	Qps = 20
 )

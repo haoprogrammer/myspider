@@ -7,7 +7,13 @@ type ConcurrentEngine struct {
 	WorkerCount int
 
 	ItemChan chan Item
+
+	RequestProcessor Processor
 }
+
+//Processor 是一个函数，收一个Request，返回ParserResult和err
+//从worker函数演变过来的
+type Processor func(Request) (ParserResult, error)
 
 type Scheduler interface {
 	//组合方式
@@ -40,7 +46,7 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 
 	for i := 0; i < e.WorkerCount; i++ {
 		//找scheduler要chan
-		createWorker(e.Scheduler.WorkerChan(), out, e.Scheduler)
+		e.createWorker(e.Scheduler.WorkerChan(), out, e.Scheduler)
 	}
 
 	//创建worker后再submit
@@ -73,14 +79,15 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 
 //创建worker
 //每个worker对外接口是chan request
-func createWorker(in chan Request, out chan ParserResult, ready ReadyNotifier) {
+func (e *ConcurrentEngine) createWorker(in chan Request, out chan ParserResult, ready ReadyNotifier) {
 	go func() {
 		for {
 			//tell scheduler i'm ready
 			ready.WorkerReady(in)
 			//从in拿数据
 			request := <-in
-			result, err := Worker(request)
+			//result, err := Worker(request)
+			result, err := e.RequestProcessor(request)
 			if err != nil {
 				continue
 			}

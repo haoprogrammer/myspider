@@ -7,6 +7,7 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
+	"haoprogrammer/myspider/crawler_distributed/config"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,12 +16,14 @@ import (
 
 //待爬取目标网站如果爬取网络流量正常稳定可以适当减少等待时间
 // 500毫秒执行一次请求
-var rateLimiter = time.Tick(500 * time.Millisecond)
+var rateLimiter = time.Tick(time.Second / config.Qps)
 
 // fetch到的网页数据 该url不能获取数据则err
 func Fetch(url string) ([]byte, error) {
 
 	<-rateLimiter
+	log.Printf("Fetching url %s", url)
+
 	//出现浏览器可以对该URL进行访问，可是爬取时则返回403问题
 	//resp, err := http.Get(url)
 	//defer resp.Body.Close()
